@@ -3,7 +3,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-import com.xtxk.hb.framework.model.TreeNode;
+import util.TreeNode;
 
 public class TreeUtil {
 	/**
