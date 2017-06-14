@@ -1,4 +1,27 @@
 ﻿/**
+@class 被观察者
+@author hulang
+@date 2017-04-25
+*/
+function Observable() {
+    this.changed = false;
+    this.obs = [];
+}
+/**
+增加一个观察者
+*/
+Observable.prototype.addObserver = function(o) {
+	if(o && this.obs.indexOf(o) == -1)
+		this.obs.push(o);
+};
+/**
+通知观察者们
+*/
+Observable.prototype.notifyObservers = function() {
+    this.notifyObservers(null);
+};
+
+/**
 如果该对象已经改变(changed来指示)，
 那么通知观察者，并在之前调用clearChanged()指示此对象已不再更改。
 @param arg 任何对象
