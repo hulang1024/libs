@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>DateSelector Example</title>
+</head>
+
+<body>
+    时间范围:
+    <input id="startTime" name="startTime" type="text">
+    到
+    <input id="endTime" name="endTime" type="text">
+    <button id="query">Ok</button>    
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+    <script src="../dateselector.js"></script>
+    <script>
+    var startDateSelect = new DateSelector({
+        elem: $("#startTime"), minYear: 2017, maxYearIsNow: true, yearOrder: 'asc'});
+    var endDateSelect = new DateSelector({
+        elem: $("#endTime"), minYear: 2017, maxYearIsNow:true, yearOrder: 'desc'});
+
+    $("#query").click(function(){
+        if(!startDateSelect.isFull() && !endDateSelect.isFull()) {
+            alert('hello');
+            return;
+        }
+        alert(startDateSelect.getValue() + '-' + endDateSelect.getValue());
+    });  
+    </script>
+</body>
+</html>
