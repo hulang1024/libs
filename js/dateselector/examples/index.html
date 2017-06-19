@@ -6,11 +6,17 @@
 </head>
 
 <body>
-    时间范围:
+    Time Unit:
+    <select id="timeUnit">
+        <option value="day">Day</option>
+        <option value="month">Month</option>
+        <option value="year">Year</option>
+    </select>
+   Date Range:
     <input id="startTime" name="startTime" type="text">
-    到
+    to
     <input id="endTime" name="endTime" type="text">
-    <button id="query">Ok</button>    
+    <button id="query">OK</button>    
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"
             integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
             crossorigin="anonymous"></script>
@@ -20,7 +26,12 @@
         elem: $("#startTime"), minYear: 2017, maxYearIsNow: true, yearOrder: 'asc'});
     var endDateSelect = new DateSelector({
         elem: $("#endTime"), minYear: 2017, maxYearIsNow:true, yearOrder: 'desc'});
-
+    $("#timeUnit").change(function() {
+        var value = this.value;
+        [startDateSelect, endDateSelect].forEach(function(dateSelector){
+            dateSelector.setUnit(value);
+        });
+    });
     $("#query").click(function(){
         if(!startDateSelect.isFull() && !endDateSelect.isFull()) {
             alert('hello');
