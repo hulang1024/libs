@@ -26,11 +26,9 @@ var DateSelector = function(options) {
     var yearSelect = document.createElement('select');
     var years = [];
     if(options.yearOrder == 'desc') {
-        // 当前年份 ~ minYear
         for(var n = maxYear; n >= minYear; n--)
             years.push(n);
     } else {
-        // minYear ~ 当前年份
         for(var n = minYear; n <= maxYear; n++)
             years.push(n);
     }
