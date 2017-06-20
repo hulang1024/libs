@@ -6,19 +6,21 @@
 </head>
 
 <body>
-    Time Unit:
+    时间单位:
     <select id="timeUnit">
-        <option value="day">Day</option>
-        <option value="month">Month</option>
-        <option value="year">Year</option>
+        <option value="day" selected='selected'>日</option>
+        <option value="month">月</option>
+        <option value="year">年</option>
     </select>
-   Date Range:
+   日期范围:
     <input id="startTime" name="startTime" type="text">
-    to
+    到
     <input id="endTime" name="endTime" type="text">
     <button id="query">OK</button>    
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"
             integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"
             crossorigin="anonymous"></script>
     <script src="../dateselector.js"></script>
     <script>
@@ -33,11 +35,49 @@
         });
     });
     $("#query").click(function(){
+        var timeUnit = $("#timeUnit").val();
+        var MAX_DIFF = 7;
+        var format = 'YYYY-MM-DD'.substring(0, {day: 10, month: 7, year: 4}[timeUnit]);
+        
+        // 自动设置未输入值
         if(!startDateSelect.isFull() && !endDateSelect.isFull()) {
-            alert('hello');
+            // 最近MAX_DIFF天
+            startTime = moment().subtract(MAX_DIFF - 1, timeUnit).format(format);
+            endTime = moment().format(format);
+        }
+        else if(!startDateSelect.isFull() && endDateSelect.isFull())
+            startTime = moment(endTime).subtract(MAX_DIFF - 1, timeUnit).format(format);
+        else if(startDateSelect.isFull() && !endDateSelect.isFull())
+            endTime = moment().format(format);
+
+        startDateSelect.setValue(startTime);
+        endDateSelect.setValue(endTime);
+        startTime = startDateSelect.getValue();
+        endTime = endDateSelect.getValue();
+        
+        var diffs = timeUnit != 'year' ?
+            moment(endTime).diff(moment(startTime), timeUnit) : endTime - startTime;
+        if(diffs < 0) {
+            showAlert("提示", "开始时间大于结束时间", "info");
             return;
         }
-        alert(startDateSelect.getValue() + '-' + endDateSelect.getValue());
+        // 判断差值
+        if(diffs + 1 > MAX_DIFF) {
+            showAlert("提示", "时间跨度不能超过" + MAX_DIFF + {day:'天',month:'月',year:'年'}[timeUnit], "info");
+            return;
+        }
+        
+        function ymdInTitle(dateStr, timeUnit) {
+            var u = ['年','月','日'];
+            var strs = dateStr.substring(0, {day: 10, month: 7, year: 5}[timeUnit]);
+            return strs.split('-').map(function(s, i){ return s + u[i]; }).join('');
+        }
+        timeTitle = ymdInTitle(startTime);
+        if(startTime != endTime) {
+            timeTitle += '到' + ymdInTitle(endTime);
+        }
+
+        alert(timeTitle);
     });  
     </script>
 </body>
