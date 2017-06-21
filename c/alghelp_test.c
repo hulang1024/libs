@@ -2,7 +2,23 @@
 #include <string.h>
 #include <stdlib.h>
 
-int main() {
+int int_cmp(void * a, void * b)
+{
+    return *(int*)a - *(int*)b;
+}
+
+int main()
+{
+    int a[] = {1,5,3,4};
+    void* p = lsearch((int*)5, a, 4, sizeof(int), int_cmp);
+    printf("%d", *(int*)p);
+
+
+    int ia[] = {1,2,3,4,5};
+    rotate(ia, ia + 2, ia + 5);
+    print_int_array(ia, 5);
+
+
     int i1 = 2;
     int i2 = 3;
     swap(&i1, &i2, sizeof(int));

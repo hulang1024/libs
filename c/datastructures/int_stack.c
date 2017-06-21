@@ -1,4 +1,4 @@
-#include <stdlib.h>
+ï»¿#include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 #include "int_stack.h"
@@ -18,7 +18,7 @@ void IntStackDelete(IntStack *s)
 void IntStackPush(IntStack *s, int elem)
 {
     if(s->logicalLenth == s->allocLength) {
-        s->allocLength *= 2; // ²ÉÓÃ¼Ó±¶²ßÂÔ
+        s->allocLength *= 2; // é‡‡ç”¨åŠ å€ç­–ç•¥
         s->elems = realloc(s->elems, s->allocLength * sizeof(int));
         assert(s->elems != NULL);
     }
