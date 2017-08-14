@@ -10,7 +10,7 @@ public interface TreeNode {
 	String getText();
 	void setText(String text);
 
-	void addChildren(TreeNode children);
+	void addChild(TreeNode child);
 	List<? extends TreeNode> getChildren();
 	void setChildren(List<? extends TreeNode> nodes);
 }
