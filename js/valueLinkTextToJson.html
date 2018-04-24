@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>valueLinkTextToJson</title>
+</head>
+
+<body>
+<div>
+原串：<textarea id="srcStr" rows="2" cols="120"></textarea>
+</div>
+<div>
+名值分隔符<select id="kvSeparator">
+  <option value="-">-</option>
+  <option value=":">:</option>
+  <option value="=">=</option>
+</select>
+
+项分隔符<select id="itemSeparator">
+  <option value=" ">空格</option>
+  <option value=",">逗号</option>
+</select>
+</div>
+<div>
+输出:
+<textarea id="output" rows="3" cols="80"></textarea>
+</div>
+<button onclick="trasform()">转换</button>
+
+<script>
+function trasform() {
+  var srcStrTextarea = document.getElementById('srcStr');
+  var kvSeparatorSelect = document.getElementById('kvSeparator');
+  var itemSeparatorSelect = document.getElementById('itemSeparator');
+  var output = document.getElementById('output');
+ 
+  output.value = JSON.stringify(
+    valueLinkTextToMap(srcStrTextarea.value, kvSeparatorSelect.value, itemSeparatorSelect.value));
+}
+
+function valueLinkTextToMap(str, kvSeparator, itemSeparator) {
+  var itemStrs = str.split(itemSeparator);
+  var map = {};
+  itemStrs.forEach(function(itemStr) {
+    var kv = itemStr.split(kvSeparator);
+    map[kv[0]] = kv[1];
+  });
+  
+  return map;
+}
+</script>
+</body>
+</html>
