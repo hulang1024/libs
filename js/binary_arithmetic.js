@@ -15,7 +15,7 @@ function fullAdder(c, a, b, result) {
 /*二进制数 加法*/
 function addBits(a, b) {
     var sumBits = [];
-  	var r = [0, 0];
+    var r = [0, 0];
     fullAdder(r[1], a[7], b[7], r);
     sumBits.unshift(r[0]);
     fullAdder(r[1], a[6], b[6], r);
@@ -49,7 +49,7 @@ function signedDecimalToBinary(n) {
         n = Math.floor(n / 2);
     }
   	//补0
-  	for (var i = 8 - bits.length; i > 0; i--) {
+    for (var i = 8 - bits.length; i > 0; i--) {
         bits.unshift(0);
     }
     return bits;
