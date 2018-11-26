@@ -1,41 +1,50 @@
-﻿/*
-全加器
-@param c 来自相邻低位的进位
-@param a 被加数
-@param b 加数
-@param result [和，进位]
-*/
-function fullAdder(c, a, b, result) {
-    var s = c ^ a ^ b;
-    var c = ((a & c) || (b & c)) || (a & b)
-    result[0] = s;
-    result[1] = c;
+﻿
+function logicalNot(b) {
+    if (b == 0) return 1;
+    if (b == 1) return 0;
 }
 
-/*二进制数 加法*/
+function logicalAnd(a, b) {
+    return a == 1 && b == 1 ? 1 : 0;
+}
+
+function logicalOr(a, b) {
+    return logicalNot(logicalAnd(logicalNot(a), logicalNot(b)));
+}
+
+function xor(a, b) {
+    return logicalAnd(logicalOr(a, b), logicalNot(logicalAnd(a, b)));
+}
+
+function halfAdder(a, b, s, c) {
+    s[0] = xor(a, b);
+    c[0] = logicalAnd(a, b);
+}
+
+function fullAdder(cIn, a, b, sumOuts, sumOutIndex, cOut) {
+    var _sumOut = [];
+    var _cOut1 = [];
+    var _cOut2 = [];
+    halfAdder(a, b, _sumOut, _cOut1);
+    halfAdder(_sumOut[0], cIn, _sumOut, _cOut2);
+    sumOuts[sumOutIndex] = _sumOut[0];
+    cOut[0] = logicalOr(_cOut1, _cOut2);
+}
+
 function addBits(a, b) {
     var sumBits = [];
-    var r = [0, 0];
-    fullAdder(r[1], a[7], b[7], r);
-    sumBits.unshift(r[0]);
-    fullAdder(r[1], a[6], b[6], r);
-    sumBits.unshift(r[0]);
-    fullAdder(r[1], a[5], b[5], r);
-    sumBits.unshift(r[0]);
-    fullAdder(r[1], a[4], b[4], r);
-    sumBits.unshift(r[0]);
-    fullAdder(r[1], a[3], b[3], r);
-    sumBits.unshift(r[0]);
-    fullAdder(r[1], a[2], b[2], r);
-    sumBits.unshift(r[0]);
-    fullAdder(r[1], a[1], b[1], r);
-    sumBits.unshift(r[0]);
-    fullAdder(r[1], a[0], b[0], r);
-    sumBits.unshift(r[0]);
+    var c = [0];
+    fullAdder(c[0], a[7], b[7], sumBits, 7, c);
+    fullAdder(c[0], a[6], b[6], sumBits, 6, c);
+    fullAdder(c[0], a[5], b[5], sumBits, 5, c);
+    fullAdder(c[0], a[4], b[4], sumBits, 4, c);
+    fullAdder(c[0], a[3], b[3], sumBits, 3, c);
+    fullAdder(c[0], a[2], b[2], sumBits, 2, c);
+    fullAdder(c[0], a[1], b[1], sumBits, 1, c);
+    fullAdder(c[0], a[0], b[0], sumBits, 0, c);
     return sumBits;
 }
 
-/*二进制数 减法*/
 function subtractBits(a, b) {
     return addBits(a, binaryToComplementBinary(b));
 }
@@ -48,7 +57,7 @@ function signedDecimalToBinary(n) {
         bits.unshift(n % 2);
         n = Math.floor(n / 2);
     }
-  	//补0
+    //补0
     for (var i = 8 - bits.length; i > 0; i--) {
         bits.unshift(0);
     }
@@ -82,14 +91,14 @@ function binaryToSignedDecimal(bits) {
 /* 二进制的补码 */
 function binaryToComplementBinary(bits) {
     //取反
-    bits[7] = +!bits[7];
-    bits[6] = +!bits[6];
-    bits[5] = +!bits[5];
-    bits[4] = +!bits[4];
-    bits[3] = +!bits[3];
-    bits[2] = +!bits[2];
-    bits[1] = +!bits[1];
-    bits[0] = +!bits[0];
+    bits[7] = logicalNot(bits[7]);
+    bits[6] = logicalNot(bits[6]);
+    bits[5] = logicalNot(bits[5]);
+    bits[4] = logicalNot(bits[4]);
+    bits[3] = logicalNot(bits[3]);
+    bits[2] = logicalNot(bits[2]);
+    bits[1] = logicalNot(bits[1]);
+    bits[0] = logicalNot(bits[0]);
     //加1
     return addBits(bits, [0,0,0,0,0,0,0,1]);
 }
@@ -101,15 +110,15 @@ function add(a, b) {
             signedDecimalToComplementBinary(b)));
 }
 
-function subtract(a, b) {
+ function subtract(a, b) {
     return binaryToSignedDecimal(
         subtractBits(
             signedDecimalToComplementBinary(a),
             signedDecimalToComplementBinary(b)));
 }
 
-//test
 
+//test
 console.log(add(6, 7));
 console.log(add(-6, 7));
 console.log(add(6, -7));
