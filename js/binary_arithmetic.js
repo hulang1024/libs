@@ -4,7 +4,7 @@
 }
 
 function logicalAnd(a, b) {
-    return a == 1 && b == 1 ? 1 : 0;
+    return (a == 1 && b == 1) ? 1 : 0;
 }
 
 function logicalOr(a, b) {
@@ -44,83 +44,134 @@ function addBits(a, b) {
     return sumBits;
 }
 
-/* 二进制的补码 */
-function binaryToComplementBinary(bits) {
-    //取反
-    bits[7] = logicalNot(bits[7]);
-    bits[6] = logicalNot(bits[6]);
-    bits[5] = logicalNot(bits[5]);
-    bits[4] = logicalNot(bits[4]);
-    bits[3] = logicalNot(bits[3]);
-    bits[2] = logicalNot(bits[2]);
-    bits[1] = logicalNot(bits[1]);
-    bits[0] = logicalNot(bits[0]);
-    //加1
-    return addBits(bits, [0,0,0,0,0,0,0,1]);
+function invertBits(bits, invertSignBit) {
+    var iBits = [];
+    iBits[7] = logicalNot(bits[7]);
+    iBits[6] = logicalNot(bits[6]);
+    iBits[5] = logicalNot(bits[5]);
+    iBits[4] = logicalNot(bits[4]);
+    iBits[3] = logicalNot(bits[3]);
+    iBits[2] = logicalNot(bits[2]);
+    iBits[1] = logicalNot(bits[1]);
+    if (invertSignBit)
+        iBits[0] = logicalNot(bits[0]);
+    return iBits;
 }
 
-function subtractBits(a, b) {
-    return addBits(a, binaryToComplementBinary(b));
-}
-
-/*有符号十进制整数转换到原码二进制*/
-function signedDecimalToBinary(n) {
-    var bits = [];
-    n = n > 0 ? n : -n;
-    while (n > 0) {
-        bits.unshift(n % 2);
-        n = Math.floor(n / 2);
+/* 反码 */
+function onesComplementBinary(bits) {
+    var signBit = bits[0];
+    var cBits = [];
+    if (signBit == 1) {
+        //取反
+        cBits = invertBits(bits, false);
+    } else {
+        cBits[7] = bits[7];
+        cBits[6] = bits[6];
+        cBits[5] = bits[5];
+        cBits[4] = bits[4];
+        cBits[3] = bits[3];
+        cBits[2] = bits[2];
+        cBits[1] = bits[1];
+        cBits[0] = bits[0];
     }
-    //补0
-    for (var i = 8 - bits.length; i > 0; i--) {
-        bits.unshift(0);
+    return cBits;
+}
+
+function binaryAdd1(bits) {
+    return addBits(bits, [0, 0, 0, 0, 0, 0, 0, 1]);
+}
+
+/* 补码 */
+function binaryToTwosComplementBinary(bits) {
+    var signBit = bits[0];
+    if (signBit == 1) {
+        bits = onesComplementBinary(bits);
+        bits = binaryAdd1(bits); //加1
     }
     return bits;
 }
 
-/*有符号十进制整数转换到补码二进制*/
-function signedDecimalToComplementBinary(n) {
-    var bits = signedDecimalToBinary(n);
-    if (n >= 0) {
-        return bits;
-    } else {
-        return binaryToComplementBinary(bits);
-    }
+function subtractBits(a, b) {
+    return addBits(a, binaryAdd1(invertBits(b, true)));
 }
 
-/*二进制转换到有符号十进制整数*/
-function binaryToSignedDecimal(bits) {
-    var signBit = bits[0];
-    //求原码
-    if (signBit == 1) {
-        bits = binaryToComplementBinary(bits);
+function decimalToTrueCodeBinary(n) {
+    var bits = decimalToMathBinary(n);
+    //补0足8位
+    for (var i = 8 - bits.length; i > 0; i--) {
+        bits.unshift(0);
     }
+    //在最高位设置符号位
+    bits[0] = n >= 0 ? 0 : 1;
+    return bits;
+}
+
+/* 十进制整数转换到数学二进制 */
+function decimalToMathBinary(n) {
+    var bits = [];
+    n = n >= 0 ? n : -n;
+    while (n > 0) {
+        bits.unshift(n % 2);
+        n = Math.floor(n / 2);
+    }
+    return bits;
+}
+
+/*二进制原码转换到十进制正整数*/
+function mathBinaryToDecimal(bits) {
     var n = 0;
-    for (var i = bits.length - 1; i > 0; i--) {
+    for (var i = bits.length - 1; i >= 0; i--) {
         n += bits[i] * Math.pow(2, bits.length - i - 1);
     }
-    return n * (signBit == 0 ? 1 : -1);
+    return n;
 }
 
+function twosComplementBinaryToDecimal(bits) {
+    var signBit = bits[0];
+    return mathBinaryToDecimal(binaryToTwosComplementBinary(bits).slice(1)) * (signBit == 0 ? 1 : -1);
+}
 
 function add(a, b) {
-    return binaryToSignedDecimal(
-        addBits(
-            signedDecimalToComplementBinary(a),
-            signedDecimalToComplementBinary(b)));
+    return twosComplementBinaryToDecimal(addBits(
+        binaryToTwosComplementBinary(decimalToTrueCodeBinary(a)),
+        binaryToTwosComplementBinary(decimalToTrueCodeBinary(b))));
 }
 
 function subtract(a, b) {
-    return binaryToSignedDecimal(
-        subtractBits(
-            signedDecimalToComplementBinary(a),
-            signedDecimalToComplementBinary(b)));
+    return twosComplementBinaryToDecimal(subtractBits(
+        binaryToTwosComplementBinary(decimalToTrueCodeBinary(a)),
+        binaryToTwosComplementBinary(decimalToTrueCodeBinary(b))));
 }
 
 
 //test
-console.log(add(6, 7));
-console.log(add(-6, 7));
-console.log(add(6, -7));
-console.log(subtract(89, 2));
-console.log(subtract(2, 89));
+(function() {
+    console.assert(mathBinaryToDecimal([0, 1, 1, 1, 1, 1, 1, 1]) == 127 && 127 == Math.pow(2, 7) - 1);
+    for (var n = 0, m = -1; n < 127; n = add(n, 1)) {
+        testAdd(n, 1);
+        console.assert(n - m == 1);
+        m = n;
+    }
+    testAdd(6, 7);
+    testAdd(-6, 7);
+    testAdd(6, -7);
+    testSubtract(89, 2);
+    testSubtract(2, 89);
+
+    function testAdd(a, b) {
+        var expect = a + b;
+        var actual = add(a, b);
+        var equals = expect == actual;
+        console.log('Test add(%d, %d) = %d, %c%s', a, b, actual,
+            'color:' + (equals ? 'green' : 'red'), equals ? 'ok' : 'fail');
+    }
+
+    function testSubtract(a, b) {
+        var expect = a - b;
+        var actual = subtract(a, b);
+        var equals = expect == actual;
+        console.info('Test subtract(%d, %d) = %d, %c%s', a, b, actual,
+            'color:' + (equals ? 'green' : 'red'), equals ? 'ok' : 'fail');
+    }
+})();
