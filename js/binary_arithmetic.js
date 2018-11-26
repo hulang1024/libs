@@ -1,5 +1,4 @@
-﻿
-function logicalNot(b) {
+﻿function logicalNot(b) {
     if (b == 0) return 1;
     if (b == 1) return 0;
 }
@@ -45,6 +44,21 @@ function addBits(a, b) {
     return sumBits;
 }
 
+/* 二进制的补码 */
+function binaryToComplementBinary(bits) {
+    //取反
+    bits[7] = logicalNot(bits[7]);
+    bits[6] = logicalNot(bits[6]);
+    bits[5] = logicalNot(bits[5]);
+    bits[4] = logicalNot(bits[4]);
+    bits[3] = logicalNot(bits[3]);
+    bits[2] = logicalNot(bits[2]);
+    bits[1] = logicalNot(bits[1]);
+    bits[0] = logicalNot(bits[0]);
+    //加1
+    return addBits(bits, [0,0,0,0,0,0,0,1]);
+}
+
 function subtractBits(a, b) {
     return addBits(a, binaryToComplementBinary(b));
 }
@@ -88,20 +102,6 @@ function binaryToSignedDecimal(bits) {
     return n * (signBit == 0 ? 1 : -1);
 }
 
-/* 二进制的补码 */
-function binaryToComplementBinary(bits) {
-    //取反
-    bits[7] = logicalNot(bits[7]);
-    bits[6] = logicalNot(bits[6]);
-    bits[5] = logicalNot(bits[5]);
-    bits[4] = logicalNot(bits[4]);
-    bits[3] = logicalNot(bits[3]);
-    bits[2] = logicalNot(bits[2]);
-    bits[1] = logicalNot(bits[1]);
-    bits[0] = logicalNot(bits[0]);
-    //加1
-    return addBits(bits, [0,0,0,0,0,0,0,1]);
-}
 
 function add(a, b) {
     return binaryToSignedDecimal(
@@ -110,7 +110,7 @@ function add(a, b) {
             signedDecimalToComplementBinary(b)));
 }
 
- function subtract(a, b) {
+function subtract(a, b) {
     return binaryToSignedDecimal(
         subtractBits(
             signedDecimalToComplementBinary(a),
