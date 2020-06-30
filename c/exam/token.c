@@ -139,6 +139,7 @@ s_token** parse_tokens(const char *exprStr, int *token_count) {
     switch (*sc) {
       case '+':
       case '-':
+      case '=':
         tokens[index++] = make_operator_token(*sc);
         sc++;
         break;
