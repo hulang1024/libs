@@ -150,6 +150,9 @@ s_token** parse_tokens(const char *exprStr, int *token_count) {
       case '.':
         if (isdigit(*(sc + 1))) {
           tokens[index++] = make_number_token(read_float(sc, +1, &sc));
+        } else {
+          tokens[index++] = make_operator_token(*sc);
+          sc++;
         }
         break;
       default:
